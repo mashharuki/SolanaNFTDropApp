@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import twitterLogo from './assets/twitter-logo.svg';
 
@@ -10,7 +10,38 @@ const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
  * APPコンポーネント
  */
 const App = () => {
-  
+
+  /**
+   * ウォレットの接続状態を確認するメソッド
+   */
+  const checkIfWalletIsConnected = async () => {
+    try {
+      const { solana } = window;
+
+      if (solana && solana.isPhantom) {
+        console.log("Phantom wallet found!");
+        const response = await solana.connect({ onlyIfTrusted: true });
+        console.log("Connected with Public Key:", response.publicKey.toString());
+      } else {
+        alert("Solana object not found! Get a Phantom Wallet 👻");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 副作用フック
+  useEffect(() => {
+    // onLoadメソッド
+    const onLoad = async () => {
+      await checkIfWalletIsConnected();
+    };
+    // ロードされたタイミングで呼び出す。
+    window.addEventListener("load", onLoad);
+    return () => window.removeEventListener("load", onLoad);
+  }, []);
+
+
   return (
     <div className="App">
       <div className="container">
