@@ -1,0 +1,2 @@
+# SolanaNFTDropApp
+Solana上でNFTをMINTするアプリを開発するためのリポジトリです。
