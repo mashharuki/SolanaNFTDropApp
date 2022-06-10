@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Connection, PublicKey } from '@solana/web3.js';
+import  * as Web3 from '@solana/web3.js';
 import { Program, Provider, web3 } from '@project-serum/anchor';
 import { MintLayout, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token';
 import { sendTransactions } from './connection';
@@ -18,6 +18,8 @@ const { SystemProgram } = web3;
 const opts = {
   preflightCommitment: 'processed',
 };
+// Candy MachineのID
+const machineId = "CmBHphdxxnK9SdiLGuLxjLqjA2VxmN9GkzMn2nJSpmNa";
 
 /**
  * CandyMachineコンポーネント
@@ -25,9 +27,11 @@ const opts = {
  * @returns 
  */
 const CandyMachine = ({ walletAddress }) => {
+  // ステート変数
+  const [candyMachine, setCandyMachine] = useState(null);
 
   const getCandyMachineCreator = async (candyMachine) => {
-    const candyMachineID = new PublicKey(candyMachine);
+    const candyMachineID = new Web3.PublicKey(candyMachine);
     return await web3.PublicKey.findProgramAddress(
         [Buffer.from('candy_machine'), candyMachineID.toBuffer()],
         candyMachineProgram,
@@ -36,7 +40,7 @@ const CandyMachine = ({ walletAddress }) => {
 
   const getMetadata = async (mint) => {
     return (
-      await PublicKey.findProgramAddress(
+      await Web3.PublicKey.findProgramAddress(
         [
           Buffer.from('metadata'),
           TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -49,7 +53,7 @@ const CandyMachine = ({ walletAddress }) => {
 
   const getMasterEdition = async (mint) => {
     return (
-      await PublicKey.findProgramAddress(
+      await Web3.PublicKey.findProgramAddress(
         [
           Buffer.from('metadata'),
           TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -91,8 +95,12 @@ const CandyMachine = ({ walletAddress }) => {
     });
   };
 
+  /**
+   * NFTを発行するためのメソッド
+   */
   const mintToken = async () => {
     const mint = web3.Keypair.generate();
+    if (!mint || !candyMachine?.state) return;
 
     const userTokenAccountAddress = (
       await getAtaForMint(mint.publicKey, walletAddress.publicKey)
@@ -102,6 +110,7 @@ const CandyMachine = ({ walletAddress }) => {
       ? (await getAtaForMint(candyMachine.state.tokenMint, walletAddress.publicKey))[0]
       : walletAddress.publicKey;
   
+    // NFTを発行するために必要なパラメータ群　 
     const candyMachineAddress = candyMachine.id;
     const remainingAccounts = [];
     const signers = [mint];
@@ -168,6 +177,7 @@ const CandyMachine = ({ walletAddress }) => {
         });
       }
     }
+    // ホワイトリストが設定されているかどうかチェック
     if (candyMachine.state.whitelistMintSettings) {
       const mint = new web3.PublicKey(
         candyMachine.state.whitelistMintSettings.mint,
@@ -262,6 +272,7 @@ const CandyMachine = ({ walletAddress }) => {
       candyMachineAddress,
     );
   
+    // NFTをミントするためのトランザクションデータを作成
     instructions.push(
       await candyMachine.program.instruction.mintNft(creatorBump, {
         accounts: {
@@ -287,6 +298,7 @@ const CandyMachine = ({ walletAddress }) => {
       }),
     );
   
+    // MINT実行
     try {
       return (
         await sendTransactions(
@@ -313,10 +325,12 @@ const CandyMachine = ({ walletAddress }) => {
     const idl = await Program.fetchIdl(candyMachineProgram, provider);
     const program = new Program(idl, candyMachineProgram, provider);
 
-    // Candy Machineからメタデータを取得する
-    const candyMachine = await program.account.candyMachine.fetch(process.env.REACT_APP_CANDY_MACHINE_ID);
+    // Candy Machineからメタデータ(アカウント)を取得する
+    const candyMachine = await program.account.candyMachine.fetch(machineId);
     //メタデータをすべて解析してログアウトする
+    // 発行できる上限値
     const itemsAvailable = candyMachine.data.itemsAvailable.toNumber();
+    // 発行済みの数
     const itemsRedeemed = candyMachine.itemsRedeemed.toNumber();
     const itemsRemaining = itemsAvailable - itemsRedeemed;
     const goLiveData = candyMachine.data.goLiveDate.toNumber();
@@ -327,8 +341,39 @@ const CandyMachine = ({ walletAddress }) => {
       (!candyMachine.data.goLiveDate ||
         candyMachine.data.goLiveDate.toNumber() > new Date().getTime() / 1000);
     // ドロップが可能になる日時を取得
-    const goLiveDateTimeString = `${new Date(goLiveData * 1000).toUTCString()}`;
+    const goLiveDateTimeString = `${new Date(goLiveData * 1000).toLocaleDateString()} @ ${new Date(goLiveData * 1000).toLocaleTimeString()}`;
     
+    // ステート変数を更新する。
+    setCandyMachine({
+      id: process.env.REACT_APP_CANDY_MACHINE_ID,
+      program,
+      state: {
+        itemsAvailable,
+        itemsRedeemed,
+        itemsRemaining,
+        goLiveData,
+        goLiveDateTimeString,
+        isSoldOut: itemsRemaining === 0,
+        isActive:
+          (presale ||
+            candyMachine.data.goLiveDate.toNumber() < new Date().getTime() / 1000) &&
+          (candyMachine.endSettings
+            ? candyMachine.endSettings.endSettingType.date
+              ? candyMachine.endSettings.number.toNumber() > new Date().getTime() / 1000
+              : itemsRedeemed < candyMachine.endSettings.number.toNumber()
+            : true),
+        isPresale: presale,
+        goLiveDate: candyMachine.data.goLiveDate,
+        treasury: candyMachine.wallet,
+        tokenMint: candyMachine.tokenMint,
+        gatekeeper: candyMachine.data.gatekeeper,
+        endSettings: candyMachine.data.endSettings,
+        whitelistMintSettings: candyMachine.data.whitelistMintSettings,
+        hiddenSettings: candyMachine.data.hiddenSettings,
+        price: candyMachine.data.price,
+      },
+    });
+
     console.log({
       itemsAvailable,
       itemsRedeemed,
@@ -343,9 +388,8 @@ const CandyMachine = ({ walletAddress }) => {
    * プロバイダーオブジェクトを取得するメソッド
    */
   const getProvider = () => {
-    const rpcHost = process.env.REACT_APP_SOLANA_RPC_HOST;
-    // connectionオブジェクトを作成
-    const connection = new Connection(rpcHost);
+    // connectionオブジェクトを作成する。
+    const connection  = new Web3.Connection(Web3.clusterApiUrl(process.env.REACT_APP_SOLANA_NETWORK));
 
     // provider オブジェクトを作成する
     const provider = new Provider(
@@ -361,15 +405,15 @@ const CandyMachine = ({ walletAddress }) => {
     getCandyMachineState();
   }, []);
 
-  return (
+  return candyMachine && candyMachine.state ? (
     <div className="machine-container">
-      <p>Drop Date:</p>
-      <p>Items Minted:</p>
+      <p>{`Drop Date: ${candyMachine.state.goLiveDateTimeString}`}</p>
+      <p>{`Items Minted: ${candyMachine.state.itemsRedeemed} / ${candyMachine.state.itemsAvailable}`}</p>
       <button className="cta-button mint-button" onClick={mintToken}>
         Mint NFT
       </button>
     </div>
-  );
+  ) : null
 };
 
 export default CandyMachine;
