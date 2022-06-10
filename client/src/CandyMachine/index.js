@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { Program, Provider, web3 } from '@project-serum/anchor';
 import { MintLayout, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token';
@@ -19,6 +19,11 @@ const opts = {
   preflightCommitment: 'processed',
 };
 
+/**
+ * CandyMachineコンポーネント
+ * @param {*} param0 ウォレットのアドレス
+ * @returns 
+ */
 const CandyMachine = ({ walletAddress }) => {
 
   const getCandyMachineCreator = async (candyMachine) => {
@@ -296,6 +301,65 @@ const CandyMachine = ({ walletAddress }) => {
     }
     return [];
   };
+
+  /**
+   * CandyMachineアカウントの情報を取得するメソッド
+   * ※ロード時に読み込まれる。
+   */
+  const getCandyMachineState = async () => {
+    // プロバイダーオブジェクトを取得する
+    const provider = getProvider();
+    //  デプロイされたCandy Machineプログラムのメタデータを取得する
+    const idl = await Program.fetchIdl(candyMachineProgram, provider);
+    const program = new Program(idl, candyMachineProgram, provider);
+
+    // Candy Machineからメタデータを取得する
+    const candyMachine = await program.account.candyMachine.fetch(process.env.REACT_APP_CANDY_MACHINE_ID);
+    //メタデータをすべて解析してログアウトする
+    const itemsAvailable = candyMachine.data.itemsAvailable.toNumber();
+    const itemsRedeemed = candyMachine.itemsRedeemed.toNumber();
+    const itemsRemaining = itemsAvailable - itemsRedeemed;
+    const goLiveData = candyMachine.data.goLiveDate.toNumber();
+    // プレセールの設定
+    const presale =
+      candyMachine.data.whitelistMintSettings &&
+      candyMachine.data.whitelistMintSettings.presale &&
+      (!candyMachine.data.goLiveDate ||
+        candyMachine.data.goLiveDate.toNumber() > new Date().getTime() / 1000);
+    // ドロップが可能になる日時を取得
+    const goLiveDateTimeString = `${new Date(goLiveData * 1000).toUTCString()}`;
+    
+    console.log({
+      itemsAvailable,
+      itemsRedeemed,
+      itemsRemaining,
+      goLiveData,
+      goLiveDateTimeString,
+      presale,
+    });
+  }
+
+  /**
+   * プロバイダーオブジェクトを取得するメソッド
+   */
+  const getProvider = () => {
+    const rpcHost = process.env.REACT_APP_SOLANA_RPC_HOST;
+    // connectionオブジェクトを作成
+    const connection = new Connection(rpcHost);
+
+    // provider オブジェクトを作成する
+    const provider = new Provider(
+      connection,
+      window.solana,
+      opts.preflightCommitment
+    );
+
+    return provider;
+  };
+
+  useEffect(() => {
+    getCandyMachineState();
+  }, []);
 
   return (
     <div className="machine-container">

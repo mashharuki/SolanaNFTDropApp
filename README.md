@@ -34,3 +34,13 @@ Solana上でNFTをMINTするアプリを開発するためのリポジトリで�
    Solana ExplorerのURL
    <a href="https://explorer.solana.com/address/CmBHphdxxnK9SdiLGuLxjLqjA2VxmN9GkzMn2nJSpmNa?cluster=devnet">https://explorer.solana.com/address/CmBHphdxxnK9SdiLGuLxjLqjA2VxmN9GkzMn2nJSpmNa?cluster=devnet</a>
 
+### Metaplexを使用してNFTの内容を変更する場合
+   1. MetaplexCLI の Candy Machine コマンドによって生成された .cache フォルダーを削除する
+
+   2. NFT ファイルを好きなように変更する
+
+   3. CLI から Metaplex の upload コマンドを実行して、NFT をアップロードし、新しい Candy Machine を作成する
+
+   4. CLI から Metaplex の verify コマンドを実行し、NFT がアップロードされ、Candy Machine が構成されていることを確認する
+
+   5. .env ファイルを新しいアドレスで更新する
