@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
-import twitterLogo from './assets/twitter-logo.svg';
+import twitterLogo from './assets/images/twitter-logo.svg';
 
 // Constants
 const TWITTER_HANDLE = 'HARUKI05758694';
