@@ -13,13 +13,14 @@ import {
   getNetworkToken,
   CIVIC
 } from './helpers';
+require('dotenv').config();
 
 const { SystemProgram } = web3;
 const opts = {
   preflightCommitment: 'processed',
 };
 // Candy MachineのID
-const machineId = "CmBHphdxxnK9SdiLGuLxjLqjA2VxmN9GkzMn2nJSpmNa";
+const machineId = "FfzLNt4vzPquzWrK6mUb3d6rw4nSJ5ZXS5XdZmqUxtCD";
 
 /**
  * CandyMachineコンポーネント
@@ -30,14 +31,21 @@ const CandyMachine = ({ walletAddress }) => {
   // ステート変数
   const [candyMachine, setCandyMachine] = useState(null);
 
-  const getCandyMachineCreator = async (candyMachine) => {
-    const candyMachineID = new Web3.PublicKey(candyMachine);
+  /**
+   * CandyMachineのCreator情報を取得するメソッド
+   */
+  const getCandyMachineCreator = async (candyMachineMint) => {
+    // CandyMachineIDを取得する。
+    const candyMachineID = new Web3.PublicKey(candyMachineMint);
     return await web3.PublicKey.findProgramAddress(
         [Buffer.from('candy_machine'), candyMachineID.toBuffer()],
         candyMachineProgram,
     );
   };
 
+  /**
+   * プログラムのメタデータを取得する関数
+   */
   const getMetadata = async (mint) => {
     return (
       await Web3.PublicKey.findProgramAddress(
@@ -266,10 +274,12 @@ const CandyMachine = ({ walletAddress }) => {
       );
     }
     const metadataAddress = await getMetadata(mint.publicKey);
+    console.log("mint", mint)
+    console.log("metadataAddress", metadataAddress)
     const masterEdition = await getMasterEdition(mint.publicKey);
   
     const [candyMachineCreator, creatorBump] = await getCandyMachineCreator(
-      candyMachineAddress,
+      metadataAddress
     );
   
     // NFTをミントするためのトランザクションデータを作成
@@ -345,7 +355,7 @@ const CandyMachine = ({ walletAddress }) => {
     
     // ステート変数を更新する。
     setCandyMachine({
-      id: process.env.REACT_APP_CANDY_MACHINE_ID,
+      id: machineId,
       program,
       state: {
         itemsAvailable,

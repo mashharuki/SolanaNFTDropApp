@@ -44,3 +44,7 @@ Solana上でNFTをMINTするアプリを開発するためのリポジトリで�
    4. CLI から Metaplex の verify コマンドを実行し、NFT がアップロードされ、Candy Machine が構成されていることを確認する
 
    5. .env ファイルを新しいアドレスで更新する
+
+### MacOS M1チップ搭載の場合 
+  `brew install pkg-config cairo pango libpng jpeg giflib librsvg`
+  
