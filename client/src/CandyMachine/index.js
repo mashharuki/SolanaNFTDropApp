@@ -4,6 +4,7 @@ import { Program, Provider, web3 } from '@project-serum/anchor';
 import { MintLayout, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token';
 import { sendTransactions } from './connection';
 import './CandyMachine.css';
+import CountdownTimer from "../CountdownTimer";
 import {
   candyMachineProgram,
   TOKEN_METADATA_PROGRAM_ID,
@@ -30,6 +31,7 @@ const machineId = "FfzLNt4vzPquzWrK6mUb3d6rw4nSJ5ZXS5XdZmqUxtCD";
 const CandyMachine = ({ walletAddress }) => {
   // ステート変数
   const [candyMachine, setCandyMachine] = useState(null);
+  const [mintStartFlg, setMintStartFlg] = useState(false);
 
   /**
    * CandyMachineのCreator情報を取得するメソッド
@@ -318,8 +320,10 @@ const CandyMachine = ({ walletAddress }) => {
           [signers, []],
         )
       ).txs.map(t => t.txid);
+      // alert("Mint Success!!");
     } catch (e) {
       console.log(e);
+      alert("Mint failed...")
     }
     return [];
   };
@@ -353,6 +357,10 @@ const CandyMachine = ({ walletAddress }) => {
     // ドロップが可能になる日時を取得
     const goLiveDateTimeString = `${new Date(goLiveData * 1000).toLocaleDateString()} @ ${new Date(goLiveData * 1000).toLocaleTimeString()}`;
     
+    if (new Date() > goLiveData) {
+      setMintStartFlg(true);
+    }
+
     // ステート変数を更新する。
     setCandyMachine({
       id: machineId,
@@ -411,19 +419,69 @@ const CandyMachine = ({ walletAddress }) => {
     return provider;
   };
 
+  /**
+   * renderDropTimerコンポーネント
+   */
+  const renderDropTimer = () => {
+    // 現在の日時とcandyMachineに設定されているドロップ開始日を取得する。
+    const currentDate = new Date();
+    const dropDate = new Date(candyMachine.state.goLiveData * 1000);
+
+    //もし現在の日時がドロップ日よりも前の場合、カウントダウンコンポーネントをレンダリングする。
+    if (currentDate < dropDate) {
+      console.log("Before drop date!");
+      // CountdownTimer コンポーネントを返します
+      return <CountdownTimer dropDate={dropDate} />;
+    }
+    // そうでない場合は、ドロップ開始日を表示する。
+    return <p>{`Drop Date: ${candyMachine.state.goLiveDateTimeString}`}</p>;
+  };
+
+  /**
+   * NFTの画像をMINTするためのコンポーネント
+   */
+  const renderimages = () => {
+    // 画像用の配列
+    const imgs = [
+      "https://i.ibb.co/h8tPSdx/Mash-Project-Icon.png",
+      "https://i.ibb.co/jyFVQx8/IMG-6855.jpg",
+      "https://i.ibb.co/Dg2TpZY/mash.jpg"
+    ];
+
+    return (
+      <div className="connected-container">
+        <div className="gif-grid">
+          {imgs.map((item, index) => (
+            <div className="gif-item" key={index}>
+              <img src={item}/>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   useEffect(() => {
     getCandyMachineState();
   }, []);
 
-  return candyMachine && candyMachine.state ? (
+  return candyMachine && candyMachine.state && (
     <div className="machine-container">
-      <p>{`Drop Date: ${candyMachine.state.goLiveDateTimeString}`}</p>
+      {renderDropTimer()}
       <p>{`Items Minted: ${candyMachine.state.itemsRedeemed} / ${candyMachine.state.itemsAvailable}`}</p>
-      <button className="cta-button mint-button" onClick={mintToken}>
-        Mint NFT
-      </button>
+      {candyMachine.state.itemsRedeemed === candyMachine.state.itemsAvailable && mintStartFlg ? (
+        <div>
+          <p className="sub-text"> Thank you!! Sold Out 🙊</p><br/>
+          <p className="sub-text">Minted Items!!</p>
+          {renderimages()}
+        </div>
+      ) : ( 
+        <button className="cta-button mint-button" onClick={mintToken}>
+          Mint NFT
+        </button>
+      )}
     </div>
-  ) : null
+  )
 };
 
 export default CandyMachine;

@@ -34,6 +34,9 @@ Solana上でNFTをMINTするアプリを開発するためのリポジトリで�
    Solana ExplorerのURL
    <a href="https://explorer.solana.com/address/CmBHphdxxnK9SdiLGuLxjLqjA2VxmN9GkzMn2nJSpmNa?cluster=devnet">https://explorer.solana.com/address/CmBHphdxxnK9SdiLGuLxjLqjA2VxmN9GkzMn2nJSpmNa?cluster=devnet</a>
 
+### candy Machineの内容を更新する場合のコマンド
+ `ts-node ~/metaplex/js/packages/cli/src/candy-machine-v2-cli.ts update_candy_machine -e devnet  -k ~/.config/solana/devnet.json -cp config.json`
+
 ### Metaplexを使用してNFTの内容を変更する場合
    1. MetaplexCLI の Candy Machine コマンドによって生成された .cache フォルダーを削除する
 
