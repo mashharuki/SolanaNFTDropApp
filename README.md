@@ -1,6 +1,11 @@
 # SolanaNFTDropApp
 Solana上でNFTをMINTするアプリを開発するためのリポジトリです。
 
+## アプリのイメージ
+
+ 全てのNFTを発行すると下記のような表示になります！！
+ <img src="./imgs/2.png">
+
 ## metaplexについて
    Mac OS M1チップ搭載端末で試したところ下記コマンドを打たないとインストールがうまくいかなかったのでメモ  
    `brew install pkg-config cairo pango libpng jpeg giflib librsvg`  
@@ -66,3 +71,5 @@ Solana上でNFTをMINTするアプリを開発するためのリポジトリで�
   ```
 
   → Phantom Walletの方でも確認できる。
+  <img src="./imgs/1.png">
+  
