@@ -3,7 +3,7 @@
       "number": 3,
       "gatekeeper": null,
       "solTreasuryAccount": "Dk9eEaWTesSfwSBYXdW24iSLJDHJEN64TAv9MMdbdiZ4",
-      "splTokenAccount": "5SJeUtdv28QL8hLvqayRotUqhPKZxYC2WK5gAM3HUbM6",
+      "splTokenAccount": null,
       "splToken": null,
       "goLiveDate": "11 June 2022 12:00:00 GMT",
       "endSettings": null,

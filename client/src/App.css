@@ -1,6 +1,6 @@
 .App {
   height: 100vh;
-  background-color: rgb(20, 20, 20);
+  /* background-color: rgb(20, 20, 20); */
   overflow: scroll;
   text-align: center;
   overflow: hidden;
@@ -65,10 +65,11 @@
 }
 
 .mint-button {
-  background: -webkit-linear-gradient(left, #4e44ce, #35aee2);
+  background: -webkit-linear-gradient(left, #4e44ce, #ee31f1);
   background-size: 200% 200%;
   animation: gradient-animation 4s ease infinite;
   margin-left: 10px;
+  color: white;
 }
 
 .footer-container {
@@ -108,6 +109,15 @@
 
 .connected-container button {
   height: 50px;
+}
+
+body {
+  margin: 0 !important;
+  height:100vh;
+  width:100%;
+  background: -webkit-linear-gradient(-45deg, #4e44ce , #23A6D5);
+  animation: gradient-animation 15s ease infinite;
+  background-size: 400% 400%;
 }
 
 /* KeyFrames */

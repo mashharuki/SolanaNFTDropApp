@@ -51,3 +51,18 @@ Solana上でNFTをMINTするアプリを開発するためのリポジトリで�
 ### MacOS M1チップ搭載の場合 
   `brew install pkg-config cairo pango libpng jpeg giflib librsvg`
   
+### アップロードされたファイルを検証するためのコマンド
+  `ts-node ~/git/solana-nft-project/metaplex/js/packages/cli/src/candy-machine-v2-cli.ts verify_upload -e devnet -k ~/.config/solana/devnet.json -cp config.json -c temp`
+
+### NFTを発行するためのコマンド
+  `ts-node ~/git/solana-nft-project/metaplex/js/packages/cli/src/candy-machine-v2-cli.ts mint_one_token -e devnet -k ~/.config/solana/devnet.json -cp config.json -c temp`  
+
+  レスポンスの一例  
+  ```cmd
+   wallet public key: DwYhDga2oWridp1kJrA7ZZHznT6WWauG3S58V1doKiQm
+   Using cluster devnet
+   Transaction size estimate:  1074
+   mint_one_token finished 4XuFh8BGJirg6ft2FEMoJgwZL95KhWGzM8dEg6KDFeRupRvHgKKquyDcpFwFcXN3wyEnnvGowprtarPZh94j5QSA
+  ```
+
+  → Phantom Walletの方でも確認できる。

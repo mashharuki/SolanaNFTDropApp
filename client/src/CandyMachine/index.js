@@ -21,7 +21,7 @@ const opts = {
   preflightCommitment: 'processed',
 };
 // Candy MachineのID
-const machineId = "FfzLNt4vzPquzWrK6mUb3d6rw4nSJ5ZXS5XdZmqUxtCD";
+const machineId = "Fx8yjyMmKGdjGcP4RbjsuTq4jprdobH5ctA3Qf7au89J";
 
 /**
  * CandyMachineコンポーネント
