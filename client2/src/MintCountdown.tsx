@@ -106,14 +106,12 @@ export const MintCountdown: React.FC<MintCountdownProps> = ({
   };
 
   if (date) {
-    return (
-     
+    return ( 
       <Countdown
         date={date}
         onComplete={onComplete}
         renderer={renderCountdown}
-      />
-      
+      />    
     );
   } else {
     return null;

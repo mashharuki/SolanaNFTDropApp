@@ -31,6 +31,12 @@ import { MintButton } from './MintButton';
 import { GatewayProvider } from '@civic/solana-gateway-react';
 import { sendTransaction } from './connection';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import MASHGIF from './assets/images/mash.gif';
+import twitterLogo from './assets/images/twitter-logo.svg';
+
+// Constants
+const TWITTER_HANDLE = 'HARUKI05758694';
+const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 const ConnectButton = styled(WalletDialogButton)`
   width: 100%;
@@ -558,10 +564,10 @@ const Home = (props: HomeProps) => {
                           status={
                             candyMachine?.state?.isSoldOut ||
                             (endDate && Date.now() > endDate.getTime())
-                              ? 'COMPLETED'
+                              ? 'ENDED'
                               : isPresale
                               ? 'PRESALE'
-                              : 'LIVE'
+                              : 'PUBLIC SALE'
                           }
                           onComplete={toggleMintButton}
                         />
@@ -584,6 +590,14 @@ const Home = (props: HomeProps) => {
                 </Grid>
               )}
               <MintContainer>
+                <Grid
+                  container
+                  
+                  justifyContent="center"
+                  wrap="nowrap"
+                >
+                  <img src={MASHGIF}  height="300"/>
+                </Grid>
                 {candyMachine?.state.isActive &&
                 candyMachine?.state.gatekeeper &&
                 wallet.publicKey &&
@@ -700,6 +714,15 @@ const Home = (props: HomeProps) => {
           </Typography>
         </Paper>
       </Container>
+      <div className="footer-container">
+          <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
+          <a
+            className="footer-text"
+            href={TWITTER_LINK}
+            target="_blank"
+            rel="noreferrer"
+          >{`built on @${TWITTER_HANDLE}`}</a>
+        </div>
 
       <Snackbar
         open={alertState.open}

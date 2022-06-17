@@ -45,7 +45,7 @@ export const MintButton = ({
 
   const getMintButtonContent = () => {
     if (candyMachine?.state.isSoldOut) {
-      return 'SOLD OUT';
+      return 'Thank you! SOLD OUT!!';
     } else if (isMinting) {
       return <CircularProgress />;
     } else if (
