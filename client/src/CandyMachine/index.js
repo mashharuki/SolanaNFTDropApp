@@ -21,7 +21,7 @@ const opts = {
   preflightCommitment: 'processed',
 };
 // Candy MachineのID
-const machineId = "Fx8yjyMmKGdjGcP4RbjsuTq4jprdobH5ctA3Qf7au89J";
+const machineId = "5EE9ps6Kch3rd9HrYqaP321ZrQ2WdWubSq34sjSRtVWK";
 
 /**
  * CandyMachineコンポーネント
@@ -276,8 +276,8 @@ const CandyMachine = ({ walletAddress }) => {
       );
     }
     const metadataAddress = await getMetadata(mint.publicKey);
-    console.log("mint", mint)
-    console.log("metadataAddress", metadataAddress)
+    //console.log("mint", mint)
+    //console.log("metadataAddress", metadataAddress)
     const masterEdition = await getMasterEdition(mint.publicKey);
   
     const [candyMachineCreator, creatorBump] = await getCandyMachineCreator(
@@ -309,15 +309,23 @@ const CandyMachine = ({ walletAddress }) => {
           remainingAccounts.length > 0 ? remainingAccounts : undefined,
       }),
     );
-  
+
     // MINT実行
     try {
+      console.log("candyMachine.program.provider.connection", candyMachine.program.provider.connection); 
       return (
         await sendTransactions(
           candyMachine.program.provider.connection,
           candyMachine.program.provider.wallet,
           [instructions, cleanupInstructions],
           [signers, []],
+          'single',
+          'singleGossip',
+          () => {},
+          () => false,
+          undefined,
+          [],
+          []
         )
       ).txs.map(t => t.txid);
       // alert("Mint Success!!");
@@ -407,7 +415,7 @@ const CandyMachine = ({ walletAddress }) => {
    */
   const getProvider = () => {
     // connectionオブジェクトを作成する。
-    const connection  = new Web3.Connection(Web3.clusterApiUrl(process.env.REACT_APP_SOLANA_NETWORK));
+    const connection  = new Web3.Connection(Web3.clusterApiUrl('devnet'));
 
     // provider オブジェクトを作成する
     const provider = new Provider(

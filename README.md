@@ -73,3 +73,8 @@ Solana上でNFTをMINTするアプリを開発するためのリポジトリで�
   → Phantom Walletの方でも確認できる。
   <img src="./imgs/1.png">
   
+### React-CountTownコンポーネントの使用について
+ 2022年6月17日現在、CountDownコンポーネントをそのまま使用しようとするとコンパイルエラーがでます。  
+
+ 下記コマンドを打ったところ解決！！  
+ `yarn add @types/react@latest`
