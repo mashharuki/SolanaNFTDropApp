@@ -47,7 +47,11 @@ const connection = new anchor.web3.Connection(
   rpcHost ? rpcHost : anchor.web3.clusterApiUrl('devnet'),
 );
 
+/**
+ * Appコンポーネント
+ */
 const App = () => {
+  // エンドポイント
   const endpoint = useMemo(() => clusterApiUrl(network), []);
 
   const wallets = useMemo(

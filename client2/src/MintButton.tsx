@@ -23,6 +23,11 @@ export const CTAButton = styled(Button)`
   font-weight: bold;
 `; // add your own styles here
 
+/**
+ * MintButtonコンポーネント
+ * @param param0 
+ * @returns 
+ */
 export const MintButton = ({
   onMint,
   candyMachine,

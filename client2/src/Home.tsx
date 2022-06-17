@@ -59,7 +59,11 @@ export interface HomeProps {
   network: WalletAdapterNetwork;
 }
 
+/**
+ * Homeコンポーネント
+ */
 const Home = (props: HomeProps) => {
+  // ステート変数
   const [isUserMinting, setIsUserMinting] = useState(false);
   const [candyMachine, setCandyMachine] = useState<CandyMachineAccount>();
   const [alertState, setAlertState] = useState<AlertState>({
@@ -80,6 +84,7 @@ const Home = (props: HomeProps) => {
   const rpcUrl = props.rpcHost;
   const wallet = useWallet();
   const cluster = props.network;
+
   const anchorWallet = useMemo(() => {
     if (
       !wallet ||
@@ -295,6 +300,12 @@ const Home = (props: HomeProps) => {
     [anchorWallet, props.candyMachineId, props.rpcHost],
   );
 
+  /**
+   * NFTをMintするためのメソッド 
+   * @param beforeTransactions 
+   * @param afterTransactions 
+   * @returns 
+   */
   const onMint = async (
     beforeTransactions: Transaction[] = [],
     afterTransactions: Transaction[] = [],
@@ -375,13 +386,14 @@ const Home = (props: HomeProps) => {
         }
 
         if (status && !status.err && metadataStatus) {
-          // manual update since the refresh might not detect
-          // the change immediately
+          // 残存数を取得する。
           let remaining = itemsRemaining! - 1;
           setItemsRemaining(remaining);
           setIsActive((candyMachine.state.isActive = remaining > 0));
+          // 売り切れているか確認する。
           candyMachine.state.isSoldOut = remaining === 0;
           setSetupTxn(undefined);
+          // 成功時のアラート
           setAlertState({
             open: true,
             message: 'Congratulations! Mint succeeded!',
@@ -464,6 +476,7 @@ const Home = (props: HomeProps) => {
     setIsActive((candyMachine!.state.isActive = active));
   };
 
+  // 副作用フック
   useEffect(() => {
     refreshCandyMachineState();
   }, [
@@ -483,7 +496,17 @@ const Home = (props: HomeProps) => {
   }, [refreshCandyMachineState]);
 
   return (
-    <Container style={{ marginTop: 100 }}>
+    <Container style={{ marginTop: 100}}>
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        wrap="nowrap"
+      >
+        <div className="header-container">
+          <p className="header">🍭Let's Mint DropNFT!! 🍭</p>
+        </div>
+      </Grid>
       <Container maxWidth="xs" style={{ position: 'relative' }}>
         <Paper
           style={{
@@ -589,14 +612,16 @@ const Home = (props: HomeProps) => {
                   </Grid>
                 </Grid>
               )}
-              <MintContainer>
+              <MintContainer style={{ marginTop: 10, marginBottom: 10}}>
                 <Grid
                   container
-                  
                   justifyContent="center"
                   wrap="nowrap"
                 >
                   <img src={MASHGIF}  height="300"/>
+                </Grid>
+                <Grid style={{ marginTop: 10, marginBottom: 10 }}>
+                  我が家の愛犬のNFTを発行しよう！
                 </Grid>
                 {candyMachine?.state.isActive &&
                 candyMachine?.state.gatekeeper &&
@@ -714,6 +739,13 @@ const Home = (props: HomeProps) => {
           </Typography>
         </Paper>
       </Container>
+      <div className="gif-grid">
+        {/*imgs.map((item, index) => (
+          <div className="gif-item" key={index}>
+            <img src={item}/>
+          </div>
+        ))*/}
+      </div>
       <div className="footer-container">
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
           <a
@@ -742,6 +774,11 @@ const Home = (props: HomeProps) => {
   );
 };
 
+/**
+ * カウンドダウン用の日程を取得するメソッド
+ * @param candyMachine 
+ * @returns 
+ */
 const getCountdownDate = (
   candyMachine: CandyMachineAccount,
 ): Date | undefined => {
