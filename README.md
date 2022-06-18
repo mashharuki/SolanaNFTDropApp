@@ -17,10 +17,9 @@ Solana上でNFTをMINTするアプリを開発するためのリポジトリで�
    このコマンドを打って「0.0.2」と表示されればOK!
 
 ## NFTをアップロードする際に打ち込むコマンド(例) 個人の環境によってパスは異なる。
-   `ts-node ~/metaplex/js/packages/cli/src/candy-machine-v2-cli.ts upload -e devnet -k ~/.config/solana/devnet.json -cp config.json ./assets`  
+   `ts-node ~/metaplex/js/packages/cli/src/candy-machine-v2-cli.ts upload -e devnet -k ~/.config/solana/devnet.json -cp config.json ./assets/nft`  
 
    `solana config get`で確認すること！   
-
    うまくいくと下記のような結果がコンソールに出力される。  
    ```cmd
    Beginning the upload for 3 (img+json) pairs
